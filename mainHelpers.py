@@ -1,6 +1,7 @@
 # HELPERS
 from Queue import Queue
 import time
+import random
 
 class Helpers:
     def isAnyoneInQueue(self, queue) -> bool:
@@ -22,3 +23,12 @@ class Helpers:
         return time.time() + (60 * 60 * 2) / 100
         # use: + 60 * 60 * 2 when testing
         # use: + 60 * 60 * 8  on production
+    
+    def defineTotalServiceTime(self) -> int:
+        return (self.__defineWalkingTime() + self.__defineServiceTime())
+    
+    def __defineServiceTime(self) -> int:
+        return random.randint(10, 40)
+    
+    def __defineWalkingTime(self) -> int:
+        return random.randint(1, 5) 

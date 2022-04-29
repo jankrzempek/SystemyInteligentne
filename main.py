@@ -7,6 +7,10 @@ from Queue import Queue
 from mainHelpers import Helpers
 import time
 
+# Algorytm zachłanny - List scheduling
+# Lekarz jest na takim samym poziomie specjalizacji
+# Kryterium Cmax - minimalizować najdłuzszy czas przyjęcia
+
 # Documentation !
 
 #      WSZYSTKO JEST SKROCONE 
@@ -26,10 +30,11 @@ if __name__ == "__main__":
     helpers = Helpers()
 
     # Doctors
-    lightDoctor = Doctor(serviceTime = 10, walkingTime = 10)
-    mediumDoctor = Doctor(serviceTime = 20, walkingTime = 20)
-    hardDoctor = Doctor(serviceTime = 30, walkingTime = 30)
-    multiDoctor = Doctor(serviceTime = 15, walkingTime = 20)
+    # Lekarze randomowo obsługuja rónych pacjentów
+    lightDoctor = Doctor()
+    mediumDoctor = Doctor()
+    hardDoctor = Doctor()
+    multiDoctor = Doctor()
 
     doctorsColletion = [
         lightDoctor,
@@ -52,7 +57,7 @@ if __name__ == "__main__":
     ]
 
     # Adding patients to the queue
-    lightQueue.addToQueue(patient=Patient(name="Wojtek"))
+    lightQueue.addToQueue(patient=Patient(serviceTime=10, walkingTime=10, name="Wojtek"))
     lightQueue.addToQueue(patient=Patient(name="Marcin"))
     lightQueue.addToQueue(patient=Patient(name="Żaneta"))
 
@@ -70,21 +75,21 @@ if __name__ == "__main__":
     while(time.time() < end_time):
 
         if lightDoctor.isFreeToTakeNewPatient() and helpers.isAnyoneInQueue(lightQueue.queue):
-            patient = lightQueue.takeFirstToDoctor(doctor=lightDoctor)
-            print(f"- (💊 L) Currently the patient {patient.name} is badany -")
+            patient = lightQueue.takeFirstToDoctor(doctor=lightDoctor, timeAmount=helpers.defineTotalServiceTime())
+            print(f"- (D1 👨🏻‍⚕️) Currently the patient {patient.name} is badany -")
         
         if mediumDoctor.isFreeToTakeNewPatient() and helpers.isAnyoneInQueue(mediumQueue.queue):
-            patient = mediumQueue.takeFirstToDoctor(doctor=mediumDoctor)
-            print(f"- (💉 M) Currently the patient {patient.name} is badany -")
+            patient = mediumQueue.takeFirstToDoctor(doctor=mediumDoctor, timeAmount=helpers.defineTotalServiceTime())
+            print(f"- (D2 👨🏿‍⚕️) Currently the patient {patient.name} is badany -")
         
         if hardDoctor.isFreeToTakeNewPatient() and helpers.isAnyoneInQueue(hardQueue.queue):
-            patient = hardQueue.takeFirstToDoctor(doctor=hardDoctor)
-            print(f"- (🦠 H) Currently the patient {patient.name} is badany -")
+            patient = hardQueue.takeFirstToDoctor(doctor=hardDoctor, timeAmount=helpers.defineTotalServiceTime())
+            print(f"- (D3 👩🏼‍⚕️) Currently the patient {patient.name} is badany -")
         
         if multiDoctor.isFreeToTakeNewPatient() and helpers.isAnyoneInAnyQueue(queueColection=queueColection):
             queue = helpers.getQueueWithPeople(queueColection=queueColection)
-            patient = queue.takeFirstToDoctor(doctor=multiDoctor)
-            print(f"- (🧻 MT) Currently the patient {patient.name} is badany -")
+            patient = queue.takeFirstToDoctor(doctor=multiDoctor, timeAmount=helpers.defineTotalServiceTime())
+            print(f"- (D4 👩🏾‍⚕️) Currently the patient {patient.name} is badany -")
 
     # Define the ending 
     print("The badania has finished, tasks completed.")

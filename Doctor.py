@@ -1,13 +1,10 @@
 import threading
 
-
 class Doctor:
   isAvailable = True
   patientCount = 0
 
-  def __init__(self, serviceTime, walkingTime, isAvailable = True, patientCount = 0):  
-        self.serviceTime = serviceTime * 60 # The reason is to have minutes here
-        self.walkingTime = walkingTime * 60 # The reason is to have minutes here
+  def __init__(self, isAvailable = True, patientCount = 0):  
         self.isAvailable = isAvailable
         self.patientCount = patientCount
 
@@ -17,15 +14,16 @@ class Doctor:
     else:
       return False
 
-  def defineAsBusy(self):
+  def defineAsBusy(self, timeAmount):
     self.isAvailable = False
     self.patientCount += 1
-    x = threading.Timer(self.__getBlockingTime(), self.__free)
+    x = threading.Timer(self.__getBlockingTime(timeAmount), self.__free)
     x.start()
 
   # Private methods
   def __free(self):
     self.isAvailable = True
 
-  def __getBlockingTime(self) -> float:
-    return (self.serviceTime + self.walkingTime) / 100
+  def __getBlockingTime(self, time) -> float:
+    # The reason is to have minutes here
+    return time / 100
