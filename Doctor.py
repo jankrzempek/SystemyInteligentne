@@ -25,5 +25,4 @@ class Doctor:
     self.isAvailable = True
 
   def __getBlockingTime(self, time) -> float:
-    # The reason is to have minutes here
-    return time / 100
+    return time

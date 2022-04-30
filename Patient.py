@@ -8,12 +8,10 @@ class Patient:
     self,
     id = uuid.uuid4(),
     healthValue = 3,
-    serviceTime = 10,
-    walkingTime = 10,
+    serviceTotalTime = 10,
     name = "Clone"):
         self.id = id
         self.healthValue = healthValue
-        self.serviceTime = serviceTime
-        self.walkingTime = walkingTime
+        self.serviceTotalTime = serviceTotalTime
         self.name = name
 

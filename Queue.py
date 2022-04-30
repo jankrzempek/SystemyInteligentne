@@ -8,8 +8,8 @@ class Queue:
   def addToQueue(self, patient):
     self.queue.append(patient)
   
-  def takeFirstToDoctor(self, doctor, timeAmount) -> str:
-    name = self.queue[0]
+  def takeFirstToDoctor(self, doctor) -> str:
+    patie = self.queue[0]
     self.queue.pop(0)
-    doctor.defineAsBusy(timeAmount)
-    return name
+    doctor.defineAsBusy(patie.serviceTotalTime)
+    return patie

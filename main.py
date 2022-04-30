@@ -5,7 +5,10 @@ from Doctor import Doctor
 from Patient import Patient
 from Queue import Queue
 from mainHelpers import Helpers
+from LearningStuff.projekt import Classifier
 import time
+
+# TODO: Odpalić kilka razy dla nowo wygenrowanych pacjentów i zrobić mała statystykę i wykres jeden - zmiejszyć jedną liczbę pacjentów
 
 # Algorytm zachłanny - List scheduling
 # Lekarz jest na takim samym poziomie specjalizacji
@@ -26,69 +29,98 @@ import time
 
 if __name__ == "__main__":
 
-    #Helpers
+    # Helpers
     helpers = Helpers()
+
+    # Classifier
+    print("🦠 The group of people is gathering. Beata is classifing now...")
+    classifier = Classifier()
+    model = classifier.create_model()
+    classifiedPatientsAll = classifier.get_patient(model)
+    print("Beata classified them, some of them are symulujący 🥸")
+    print("Beata is kicking out symulujących 🦵🏻")
+    time.sleep(5)
+    classifiedPatientsFiltered = [x for x in classifiedPatientsAll if x != 0]
+    patientsSimulants = len(classifiedPatientsAll) - len(classifiedPatientsFiltered)
+    print("Patients are ready to be przebadani!")
+    time.sleep(5)
+    print("----[]-----[]-----[]----[]--<-<-\(+_+)/")
+
+    #Define time counters for each queue
+    firstTimer = 0
+    secondTimer = 0
+    thirdTimer = 0
+    fourthTimer = 0
 
     # Doctors
     # Lekarze randomowo obsługuja rónych pacjentów
-    lightDoctor = Doctor()
-    mediumDoctor = Doctor()
-    hardDoctor = Doctor()
-    multiDoctor = Doctor()
+    firstDoctor = Doctor()
+    secondDoctor = Doctor()
+    thirdDoctor = Doctor()
+    forthDoctor = Doctor()
 
     doctorsColletion = [
-        lightDoctor,
-        mediumDoctor,
-        hardDoctor,
-        multiDoctor
+        firstDoctor,
+        secondDoctor,
+        thirdDoctor,
+        forthDoctor
     ]
 
     #Queue
-    lightQueue = Queue(queue=[])
-    mediumQueue = Queue(queue=[])
-    hardQueue = Queue(queue=[])
-    multiQueue = Queue(queue=[])
+    firstQueue = Queue(queue=[])
+    secondQueue = Queue(queue=[])
+    thirdQueue = Queue(queue=[])
+    forthQueue = Queue(queue=[])
 
     queueColection = [
-        lightQueue,
-        mediumQueue,
-        hardQueue,
-        multiQueue
+        firstQueue,
+        secondQueue,
+        thirdQueue,
+        forthQueue
     ]
 
-    # Adding patients to the queue
-    lightQueue.addToQueue(patient=Patient(serviceTime=10, walkingTime=10, name="Wojtek"))
-    lightQueue.addToQueue(patient=Patient(name="Marcin"))
-    lightQueue.addToQueue(patient=Patient(name="Żaneta"))
+    # Given all of the patients the right identity
+    IdentifiedPatients = [helpers.convertPatient(x) for x in classifiedPatientsFiltered]
 
-    mediumQueue.addToQueue(patient=Patient(name="Anna"))
-    mediumQueue.addToQueue(patient=Patient(name="Dawid"))
+    def sortValue(p):
+        return p.serviceTotalTime
 
-    hardQueue.addToQueue(patient=Patient(name="Franek"))
-    hardQueue.addToQueue(patient=Patient(name="Darek"))
-    hardQueue.addToQueue(patient=Patient(name="Marek"))
-    hardQueue.addToQueue(patient=Patient(name="Alicja"))
-    hardQueue.addToQueue(patient=Patient(name="Marysia"))
+    IdentifiedPatients.sort(key=sortValue)
+
+    # Moving patients to right queue
+    firstQueue.queue = IdentifiedPatients[0::4]
+    del IdentifiedPatients[0::4]
+
+    secondQueue.queue = IdentifiedPatients[0::3]
+    del IdentifiedPatients[0::3]
+
+    thirdQueue.queue = IdentifiedPatients[0::2]
+    del IdentifiedPatients[0::2]
+
+    forthQueue.queue = IdentifiedPatients
 
     # Starting work day
     end_time = helpers.defineWorkingHours()
     while(time.time() < end_time):
 
-        if lightDoctor.isFreeToTakeNewPatient() and helpers.isAnyoneInQueue(lightQueue.queue):
-            patient = lightQueue.takeFirstToDoctor(doctor=lightDoctor, timeAmount=helpers.defineTotalServiceTime())
+        if firstDoctor.isFreeToTakeNewPatient() and helpers.isAnyoneInQueue(firstQueue.queue):
+            patient = firstQueue.takeFirstToDoctor(doctor=firstDoctor)
+            firstTimer += patient.serviceTotalTime
             print(f"- (D1 👨🏻‍⚕️) Currently the patient {patient.name} is badany -")
         
-        if mediumDoctor.isFreeToTakeNewPatient() and helpers.isAnyoneInQueue(mediumQueue.queue):
-            patient = mediumQueue.takeFirstToDoctor(doctor=mediumDoctor, timeAmount=helpers.defineTotalServiceTime())
+        if secondDoctor.isFreeToTakeNewPatient() and helpers.isAnyoneInQueue(secondQueue.queue):
+            patient = secondQueue.takeFirstToDoctor(doctor=secondDoctor)
+            secondTimer += patient.serviceTotalTime
             print(f"- (D2 👨🏿‍⚕️) Currently the patient {patient.name} is badany -")
         
-        if hardDoctor.isFreeToTakeNewPatient() and helpers.isAnyoneInQueue(hardQueue.queue):
-            patient = hardQueue.takeFirstToDoctor(doctor=hardDoctor, timeAmount=helpers.defineTotalServiceTime())
+        if thirdDoctor.isFreeToTakeNewPatient() and helpers.isAnyoneInQueue(thirdQueue.queue):
+            patient = thirdQueue.takeFirstToDoctor(doctor=thirdDoctor)
+            thirdTimer += patient.serviceTotalTime
             print(f"- (D3 👩🏼‍⚕️) Currently the patient {patient.name} is badany -")
         
-        if multiDoctor.isFreeToTakeNewPatient() and helpers.isAnyoneInAnyQueue(queueColection=queueColection):
-            queue = helpers.getQueueWithPeople(queueColection=queueColection)
-            patient = queue.takeFirstToDoctor(doctor=multiDoctor, timeAmount=helpers.defineTotalServiceTime())
+        if forthDoctor.isFreeToTakeNewPatient() and helpers.isAnyoneInQueue(forthQueue.queue):
+            patient = forthQueue.takeFirstToDoctor(doctor=forthDoctor)
+            fourthTimer += patient.serviceTotalTime
             print(f"- (D4 👩🏾‍⚕️) Currently the patient {patient.name} is badany -")
 
     # Define the ending 
@@ -98,5 +130,14 @@ if __name__ == "__main__":
     for doctor in doctorsColletion:
         totalOfPatientPrzebadanych += doctor.patientCount
     
+    patientUnserviced = (len(classifiedPatientsAll) - (totalOfPatientPrzebadanych + patientsSimulants))
+    print("--------SUMARRY--------------------------------------------")
     print(f"Total of patient przebadanych: {totalOfPatientPrzebadanych}")
+    print(f"Total of patient NIEprzebadanych: {patientUnserviced}")
+    print(f"Total of patient symulantów: {patientsSimulants}")
+    print(f"1 - First queue total time: {firstTimer}")
+    print(f"2 - Second queue total time: {secondTimer}")
+    print(f"3 - Third queue total time: {thirdTimer}")
+    print(f"4 - Fourth queue total time: {fourthTimer}")
+
 
