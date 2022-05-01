@@ -6,18 +6,14 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 import pandas
 import random
-from sklearn.datasets import make_multilabel_classification
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
-# from tensorflow.keras.losses import binary_crossentropy
-# from tensorflow.keras.optimizers import Adam
 
 class Classifier():
     def download_data_and_separe_data(self):
 
         clean_data = pd.read_csv("LearningStuff/dane.csv")
-        columns = clean_data.columns
         y_data_set_column = ['wynik']
         x_data_set_column = ['Breathing Problem', 'Fever', 'Dry Cough', 'Sore throat', 'Running 0se',
             'Asthma', 'Chronic Lung Disease', 'Headache', 'Heart Disease',
@@ -39,12 +35,9 @@ class Classifier():
     def create_model(self):
         X_train, X_test, y_train, y_test = self.download_data_and_separe_data()
         # Configuration options
-        n_samples = 5433
         n_features = 19
         n_classes = 4
-        n_labels = 1
         n_epochs = 50
-        random_state = 42
         batch_size = 250
         verbosity = 1
         validation_split = 0.2
@@ -71,7 +64,7 @@ class Classifier():
 
         # Generate generalization metrics
         score = model.evaluate(X_test, y_test, verbose=0)
-        print(f'Test loss: {score[0]} / Test accuracy: {score[1]}')
+        # print(f'Test loss: {score[0]} / Test accuracy: {score[1]}')
         return model
 
 
@@ -84,12 +77,10 @@ class Classifier():
 
     def get_patient(self, model):
         n = 5433 #number of records in file
-        s = 500 #desired sample size
+        s = 300 #desired sample size
         filename = "LearningStuff/dane-kopia.csv"
         skip = sorted(random.sample(range(1,n+1),n-s)) #the 0-indexed header will not be included in the skip list
         df = pandas.read_csv(filename, skiprows=skip)
-
-        print(df)
 
         pred = self.assigning_class(df, model)
         return pred
